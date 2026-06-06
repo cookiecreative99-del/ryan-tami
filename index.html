@@ -222,49 +222,95 @@
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const guest = params.get("to");
+    const params = new URLSearchParams(window.location.search);
+    const guest = params.get("to");
 
-        if (guest) {
-            document.getElementById("guestName").innerText =
-                decodeURIComponent(guest);
-        }
+    if (guest) {
+        document.getElementById("guestName").innerText =
+            decodeURIComponent(guest);
+    }
 
-        const music = document.getElementById("bgMusic");
-        const musicBtn = document.getElementById("musicToggle");
-        const cover = document.querySelector(".cover");
-        const canvaContainer = document.getElementById("canvaContainer");
+    const music = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicToggle");
+    const cover = document.querySelector(".cover");
+    const canvaContainer = document.getElementById("canvaContainer");
 
-        let invitationOpened = false;
+    let invitationOpened = false;
 
-        cover.addEventListener("click", function () {
-            if (invitationOpened) return;
+    function autoScroll() {
+        let autoScrolling = true;
+        const speed = 1.2;
 
-            invitationOpened = true;
+        function scrollStep() {
+            if (!autoScrolling) return;
 
-            music.play().catch(function (err) {
-                console.log(err);
+            window.scrollBy({
+                top: speed,
+                behavior: "auto"
             });
 
-            cover.classList.add("fade-out");
+            requestAnimationFrame(scrollStep);
+        }
 
-            setTimeout(function () {
-                cover.style.display = "none";
-                canvaContainer.style.display = "block";
-                musicBtn.style.display = "block";
-                document.body.style.overflow = "auto";
-            }, 1000);
+        scrollStep();
+
+        // berhenti setelah 12 detik
+        setTimeout(() => {
+            autoScrolling = false;
+        }, 12000);
+
+        // berhenti jika user scroll sendiri
+        window.addEventListener(
+            "wheel",
+            () => {
+                autoScrolling = false;
+            },
+            { once: true }
+        );
+
+        window.addEventListener(
+            "touchmove",
+            () => {
+                autoScrolling = false;
+            },
+            { once: true }
+        );
+    }
+
+    cover.addEventListener("click", function () {
+        if (invitationOpened) return;
+
+        invitationOpened = true;
+
+        music.play().catch(function (err) {
+            console.log(err);
         });
 
-        musicBtn.addEventListener("click", function () {
-            if (music.paused) {
-                music.play();
-                musicBtn.innerHTML = "🔊";
-            } else {
-                music.pause();
-                musicBtn.innerHTML = "🔇";
-            }
-        });
-    </script>
+        cover.classList.add("fade-out");
+
+        setTimeout(function () {
+            cover.style.display = "none";
+            canvaContainer.style.display = "block";
+            musicBtn.style.display = "block";
+            document.body.style.overflow = "auto";
+
+            // tunggu Canva termuat lalu auto-scroll
+            setTimeout(() => {
+                autoScroll();
+            }, 3000);
+
+        }, 1000);
+    });
+
+    musicBtn.addEventListener("click", function () {
+        if (music.paused) {
+            music.play();
+            musicBtn.innerHTML = "🔊";
+        } else {
+            music.pause();
+            musicBtn.innerHTML = "🔇";
+        }
+    });
+</script>
 </body>
 </html>
