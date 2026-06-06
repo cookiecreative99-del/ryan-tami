@@ -238,44 +238,45 @@
     let invitationOpened = false;
 
     function autoScroll() {
-        let autoScrolling = true;
-        const speed = 1.2;
+    let autoScrolling = true;
+    const speed = 1.2;
 
-        function scrollStep() {
-            if (!autoScrolling) return;
+    function scrollStep() {
+        if (!autoScrolling) return;
 
-            window.scrollBy({
-                top: speed,
-                behavior: "auto"
-            });
+        const scrollTop = window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
 
-            requestAnimationFrame(scrollStep);
+        // jika sudah sampai bawah, berhenti
+        if (scrollTop + windowHeight >= documentHeight - 5) {
+            autoScrolling = false;
+            return;
         }
 
-        scrollStep();
-
-        // berhenti setelah 12 detik
-        setTimeout(() => {
-            autoScrolling = false;
-        }, 15000);
-
-        // berhenti jika user scroll sendiri
-        window.addEventListener(
-            "wheel",
-            () => {
-                autoScrolling = false;
-            },
-            { once: true }
-        );
-
-        window.addEventListener(
-            "touchmove",
-            () => {
-                autoScrolling = false;
-            },
-            { once: true }
-        );
+        window.scrollBy(0, speed);
+        requestAnimationFrame(scrollStep);
     }
+
+    scrollStep();
+
+    // berhenti jika user scroll sendiri
+    window.addEventListener(
+        "wheel",
+        () => {
+            autoScrolling = false;
+        },
+        { once: true }
+    );
+
+    window.addEventListener(
+        "touchmove",
+        () => {
+            autoScrolling = false;
+        },
+        { once: true }
+    );
+}
 
     cover.addEventListener("click", function () {
         if (invitationOpened) return;
